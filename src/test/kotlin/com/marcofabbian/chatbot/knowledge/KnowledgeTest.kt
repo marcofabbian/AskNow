@@ -4,6 +4,9 @@ import com.marcofabbian.chatbot.config.ChatbotProperties
 import com.marcofabbian.chatbot.ChatbotService
 import com.marcofabbian.chatbot.provider.MockChatProvider
 import com.marcofabbian.chatbot.provider.OpenAiChatProvider
+import com.marcofabbian.chatbot.prompt.PromptAuditLogger
+import com.marcofabbian.chatbot.prompt.PromptLoader
+import com.marcofabbian.chatbot.prompt.PromptService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -140,7 +143,8 @@ class KnowledgeTest {
                 """{"choices":[{"message":{"content":"The title is How to Invest Money. [How to Invest Money p.7]"}}]}""",
                 MediaType.APPLICATION_JSON
             ))
-        val service = ChatbotService(OpenAiChatProvider(properties, providerBuilder), properties, loader)
+        val promptService = PromptService(PromptLoader(), PromptAuditLogger())
+        val service = ChatbotService(OpenAiChatProvider(properties, providerBuilder, promptService), properties, loader)
         assertEquals(
             "The title is How to Invest Money. [How to Invest Money p.7]",
             service.answerQuestion("What is the title of the book?")
