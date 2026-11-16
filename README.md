@@ -103,6 +103,8 @@ Logging is metadata-only (request id, question length, latency); question and an
 
 Questions are sent to OpenAI, a third-party provider; do not submit personal data. See OpenAI's data retention policy for how submitted data is handled.
 
+`Strict-Transport-Security` is returned only on HTTPS requests.
+
 ## Testing
 
 Run the project's verification suite:

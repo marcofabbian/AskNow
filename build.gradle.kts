@@ -69,6 +69,9 @@ dependencies {
         }
     }
 
+    // Parse prompt registry files
+    implementation("org.yaml:snakeyaml:2.2")
+
     // Test dependencies with JUnit Jupiter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")

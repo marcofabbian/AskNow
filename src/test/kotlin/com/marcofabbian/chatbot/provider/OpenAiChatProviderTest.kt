@@ -2,6 +2,9 @@ package com.marcofabbian.chatbot.provider
 
 import com.marcofabbian.chatbot.config.ChatbotProperties
 import com.marcofabbian.chatbot.knowledge.KnowledgePassage
+import com.marcofabbian.chatbot.prompt.PromptAuditLogger
+import com.marcofabbian.chatbot.prompt.PromptLoader
+import com.marcofabbian.chatbot.prompt.PromptService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -28,6 +31,7 @@ class OpenAiChatProviderTest {
     private lateinit var restClientBuilder: RestClient.Builder
     private lateinit var server: MockRestServiceServer
     private lateinit var provider: OpenAiChatProvider
+    private lateinit var promptService: PromptService
     private val passages = listOf(KnowledgePassage("How to Invest Money", 91, "Municipal bonds fund public needs.", 1.0))
 
     private val properties = ChatbotProperties(
@@ -38,7 +42,8 @@ class OpenAiChatProviderTest {
     fun setUp() {
         restClientBuilder = RestClient.builder()
         server = MockRestServiceServer.bindTo(restClientBuilder).build()
-        provider = OpenAiChatProvider(properties, restClientBuilder)
+        promptService = PromptService(PromptLoader(), PromptAuditLogger())
+        provider = OpenAiChatProvider(properties, restClientBuilder, promptService)
     }
 
     @AfterEach
@@ -73,7 +78,7 @@ class OpenAiChatProviderTest {
         val configured = ChatbotProperties(
             openai = ChatbotProperties.OpenAi(apiKey = "test-key", model = "gpt-5.4-mini", maxOutputTokens = 300)
         )
-        val configuredProvider = OpenAiChatProvider(configured, restClientBuilder)
+        val configuredProvider = OpenAiChatProvider(configured, restClientBuilder, promptService)
         server.expect(requestTo("https://api.openai.com/v1/chat/completions"))
             .andExpect(jsonPath("$.model").value("gpt-5.4-mini"))
             .andExpect(jsonPath("$.max_completion_tokens").value(300))
@@ -173,7 +178,7 @@ class OpenAiChatProviderTest {
         val noKey = ChatbotProperties(openai = ChatbotProperties.OpenAi(apiKey = ""))
 
         assertThrows(IllegalArgumentException::class.java) {
-            OpenAiChatProvider(noKey, RestClient.builder())
+            OpenAiChatProvider(noKey, RestClient.builder(), promptService)
         }
 
     }

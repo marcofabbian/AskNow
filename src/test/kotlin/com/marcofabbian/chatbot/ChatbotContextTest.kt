@@ -6,6 +6,9 @@ import com.marcofabbian.chatbot.knowledge.KnowledgeClientConfig
 import com.marcofabbian.chatbot.provider.ChatProvider
 import com.marcofabbian.chatbot.provider.MockChatProvider
 import com.marcofabbian.chatbot.provider.OpenAiChatProvider
+import com.marcofabbian.chatbot.prompt.PromptAuditLogger
+import com.marcofabbian.chatbot.prompt.PromptLoader
+import com.marcofabbian.chatbot.prompt.PromptService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -18,7 +21,16 @@ import org.springframework.web.client.RestClient
 class ChatbotContextTest {
 
     @Configuration(proxyBeanMethods = false)
-    @Import(ChatbotService::class, MockChatProvider::class, OpenAiChatProvider::class, KnowledgeLoader::class, KnowledgeClientConfig::class)
+    @Import(
+        ChatbotService::class,
+        MockChatProvider::class,
+        OpenAiChatProvider::class,
+        PromptService::class,
+        PromptLoader::class,
+        PromptAuditLogger::class,
+        KnowledgeLoader::class,
+        KnowledgeClientConfig::class
+    )
     @EnableConfigurationProperties(ChatbotProperties::class)
     class TestConfig {
         @Bean
@@ -33,8 +45,8 @@ class ChatbotContextTest {
     @Test
     fun `default profile wires the mock provider`() {
         runner.run { context ->
-            assertThat(context).hasSingleBean(ChatProvider::class.java)
-            assertThat(context.getBean(ChatProvider::class.java)).isInstanceOf(MockChatProvider::class.java)
+            assertThat(context).hasSingleBean(MockChatProvider::class.java)
+            assertThat(context).doesNotHaveBean(OpenAiChatProvider::class.java)
         }
     }
 
@@ -45,6 +57,8 @@ class ChatbotContextTest {
             .run { context ->
                 assertThat(context).hasFailed()
                 assertThat(context.startupFailure).hasRootCauseInstanceOf(IllegalArgumentException::class.java)
+                assertThat(context.startupFailure).rootCause()
+                    .hasMessageContaining("OPENAI_API_KEY must be set when the prod profile is active")
             }
     }
 
@@ -56,8 +70,8 @@ class ChatbotContextTest {
                 "chatbot.openai.api-key=test-key"
             )
             .run { context ->
-                assertThat(context).hasSingleBean(ChatProvider::class.java)
-                assertThat(context.getBean(ChatProvider::class.java)).isInstanceOf(OpenAiChatProvider::class.java)
+                assertThat(context).hasSingleBean(OpenAiChatProvider::class.java)
+                assertThat(context).doesNotHaveBean(MockChatProvider::class.java)
             }
     }
 }

@@ -24,15 +24,6 @@ class ChatbotController(
         logger.info("ChatbotController initialized")
     }
 
-    @GetMapping("/about")
-    fun about(): ResponseEntity<String> {
-        logger.info("Loading about page")
-        val message = "This chatbot helps answer questions using the project knowledge base."
-        return ResponseEntity.ok()
-            .contentType(MediaType.TEXT_PLAIN)
-            .body(message)
-    }
-
     @GetMapping("/api/knowledge/status")
     @ResponseBody
     fun knowledgeStatus(): ResponseEntity<KnowledgeStatus> =
