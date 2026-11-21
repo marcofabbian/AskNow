@@ -70,7 +70,7 @@ dependencies {
     }
 
     // Parse prompt registry files
-    implementation("org.yaml:snakeyaml:2.2")
+    implementation("org.yaml:snakeyaml:2.7")
 
     // Test dependencies with JUnit Jupiter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
