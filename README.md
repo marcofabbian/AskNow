@@ -1,4 +1,4 @@
-# Chatbot with Knowledge
+# AskNow
 
 This project is a Kotlin Spring Boot chatbot that uses the historical book *How to Invest Money* to answer questions about investment principles, bonds, stocks and market movements. The book was published in 1908 and is not current financial advice.
 
@@ -39,8 +39,8 @@ The key is never baked into the image. `.env` is excluded from the build context
 Local (`.env` at the repository root, unquoted `KEY=value` lines):
 
 ```bash
-docker build -t chatbot-with-knowledge .
-docker run --rm -p 8080:8080 --env-file .env -e SPRING_PROFILES_ACTIVE=prod chatbot-with-knowledge
+docker build -t asknow .
+docker run --rm -p 8080:8080 --env-file .env -e SPRING_PROFILES_ACTIVE=prod asknow
 curl http://localhost:8080/actuator/health
 ```
 

@@ -1,6 +1,6 @@
 # Solution Architecture Document (SAD)
 
-**System:** Chatbot with Knowledge
+**System:** AskNow
 **Version:** 1.0 (as-built, branch `results-format`)
 **Date:** 2026-11-07
 **Status:** Draft for review
@@ -10,7 +10,7 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This document describes the architecture of *Chatbot with Knowledge*: its context, building blocks, runtime behaviour, data flows, quality attributes, deployment and known risks. It is the reference for developers, reviewers and operators.
+This document describes the architecture of *AskNow*: its context, building blocks, runtime behaviour, data flows, quality attributes, deployment and known risks. It is the reference for developers, reviewers and operators.
 
 ### 1.2 Business summary
 The application is a **finance Q&A assistant**. It takes a **finance book as its source of knowledge**, *How to Invest Money* (Project Gutenberg ebook #34463, a historical book on investing, bonds and stocks), and answers user questions about finance.
@@ -68,7 +68,7 @@ Out of scope: authentication/user accounts, conversation persistence, live web s
 ```mermaid
 flowchart LR
     User([User / Browser])
-    subgraph App[Chatbot with Knowledge - Spring Boot]
+    subgraph App[AskNow - Spring Boot]
         UI[Static web UI]
         API[REST API]
     end
@@ -373,7 +373,7 @@ flowchart LR
 - `KnowledgeNotFoundException` and its handler in `GlobalExceptionHandler` are now unused and can be removed.
 - `ChatbotController.constructor()` is a plain function, not an initialiser, so its log line never runs.
 - "Online knowledge" is the model's training knowledge, not live web search. True web integration would need a search-enabled API (for example a web-search tool or a search service) and source attribution in answers.
-- The `Dockerfile` uses a devcontainer image as its runtime base; a slim JRE image would be smaller.
+- The `Dockerfile` currently uses a hardened Java runtime base image selected for production security posture.
 
 ---
 
